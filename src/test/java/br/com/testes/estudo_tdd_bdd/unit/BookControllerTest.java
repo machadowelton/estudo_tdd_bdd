@@ -2,6 +2,7 @@ package br.com.testes.estudo_tdd_bdd.unit;
 
 
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -41,6 +42,16 @@ public class BookControllerTest {
 	
 	@MockBean
 	BookService bookService;
+//	
+//	BookServiceImpl bookServiceImpl;
+//	
+//	@MockBean
+//	BookRepository bookRepository;
+//	
+//	@BeforeEach
+//	public void setUp() {
+//		this.bookServiceImpl = new BookServiceImpl(bookRepository);
+//	}
 	
 	
 	@Test
@@ -74,7 +85,15 @@ public class BookControllerTest {
 	
 	@Test
 	@DisplayName("Deve lançar um erro quando não passar na validação")
-	public void createInvalidBookTest() {
-		
+	public void createInvalidBookTest() throws Exception {
+		String json = new ObjectMapper().writeValueAsString(new BookDTO());
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+				.post(BOOK_API)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON)
+				.content(json);
+		mockMvc.perform(request)
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("errors", hasSize(3)));
 	}
 }
