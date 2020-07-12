@@ -1,6 +1,7 @@
 package br.com.testes.estudo_tdd_bdd.exceptions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.validation.BindingResult;
@@ -25,6 +26,10 @@ public class ApiErrors {
 		bindingResult.getAllErrors().forEach((e) -> {
 			this.errors.add(e.getDefaultMessage());
 		});
+	}
+
+	public ApiErrors(BusinessException ex) {
+		this.errors = Arrays.asList(ex.getMessage());
 	}
 	
 }
