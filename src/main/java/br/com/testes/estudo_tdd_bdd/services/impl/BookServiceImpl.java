@@ -1,7 +1,9 @@
 package br.com.testes.estudo_tdd_bdd.services.impl;
 
+import java.util.Arrays;
 import java.util.Optional;
 
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import br.com.testes.estudo_tdd_bdd.exceptions.BusinessException;
@@ -42,6 +44,17 @@ public class BookServiceImpl implements BookService {
 		if(book == null || !Optional.of(book.getId()).isPresent())
 			throw new IllegalArgumentException("Livro não pode ser nulo e deve conter um id");
 		return repository.save(book);
+	}
+
+	@Override
+	public Page<Book> find(Book book, Pageable pageable) {
+		Example<Book> example = Example.of(book,
+				ExampleMatcher.matching()
+						.withIgnoreCase()
+						.withIgnoreNullValues()
+						.withStringMatcher(ExampleMatcher.StringMatcher.EXACT)
+		);
+		return repository.findAll(example, pageable);
 	}
 
 }

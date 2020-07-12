@@ -3,6 +3,9 @@ package br.com.testes.estudo_tdd_bdd.controllers;
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,6 +26,9 @@ import br.com.testes.estudo_tdd_bdd.exceptions.ApiErrors;
 import br.com.testes.estudo_tdd_bdd.exceptions.BusinessException;
 import br.com.testes.estudo_tdd_bdd.model.entity.Book;
 import br.com.testes.estudo_tdd_bdd.services.BookService;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/books")
@@ -87,7 +93,14 @@ public class BookController {
 		ApiErrors apiErrors = new ApiErrors(bindingResult); 
 		return apiErrors;
 	}
-	
+
+	@GetMapping
+	public Page<BookDTO> find(BookDTO bookDTO, Pageable pageable) {
+		Book bookFilter = modelMapper.map(bookDTO, Book.class);
+		return bookService.find(bookFilter, pageable).map((c) -> modelMapper.map(c, BookDTO.class));
+	}
+
+
 	@ExceptionHandler(BusinessException.class)
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ApiErrors handleBusinessException(BusinessException ex) {
